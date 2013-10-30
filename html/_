@@ -1,0 +1,38 @@
+<?php
+  if (isset($_GET["uname"])) {
+    $uname = $_GET["uname"];
+  } else {
+    $uname = $user;
+  }
+?>
+<h2> Профил на <?php echo $uname; ?></h2>
+<?php
+  $statement = "SELECT `solved_tasks` FROM `users` WHERE user_name='" . $uname . "'";
+  $solved_query = $connection->query($statement); 
+  $solved = $solved_query->fetch_array()[0];
+  $arr_solved = array_map('intval', explode('/', $solved));
+  
+  $tasks_per_row = 5;
+  $i = 0;
+?> <table> <th> Решени задачи </th>
+   <tbody>
+<?php
+  sort($arr_solved);
+  foreach ($arr_solved as $task) {
+    ++$i;
+    if ($i % $tasks_per_row == 1) {
+	echo "<tr>";
+    }
+    $statement = "SELECT `name` from `tasks` WHERE id=" . $task;
+    $task_query = $connection->query($statement);
+    $task_name = $task_query->fetch_array()[0];
+    echo "<td style=\"background-color:green; color:white;\">" . $task . ". " . $task_name . "</td> ";
+    if ($i % $tasks_per_row == 0) {
+	echo "</tr>\n";
+    }
+  }
+?>
+</tbody>
+</table>
+
+
